@@ -1,30 +1,32 @@
-name: Deploy to GitHub Pages
-
+name: Deploy VuePress Docs
 on:
   push:
-    branches: [main]
+    branches: [main]  # 触发部署的分支
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-latest  # 运行环境
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout 代码
+        uses: actions/checkout@v4
         with:
-          node-version: 18
+          fetch-depth: 0  # 确保获取完整历史（VuePress 可能需要）
 
-      - name: Install dependencies
-        run: npm install
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # 推荐使用 VuePress 支持的 Node.js 版本（18+）
+          cache: 'npm'  # 缓存 npm 依赖，加速构建
 
-      - name: Build VuePress
-        run: npm run build
+      - name: 安装依赖
+        run: npm install  # 确保 package.json 中已包含 vuepress
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: 构建文档（关键修复）
+        run: npx vuepress build docs  # 使用 npx 执行本地 vuepress，避免全局权限问题
+
+      # 后续部署步骤（如部署到 GitHub Pages，根据你的需求添加）
+      - name: 部署到 GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/.vuepress/dist
+          publish_dir: ./docs/.vuepress/dist  # VuePress 构建输出目录
