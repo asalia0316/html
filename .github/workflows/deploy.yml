@@ -1,32 +1,48 @@
 name: Deploy VuePress Docs
 on:
   push:
-    branches: [main]  # 触发部署的分支
+    branches: [main]
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest  # 运行环境
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout 代码
+      - name: Checkout 代码（确保拉取完整代码）
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 确保获取完整历史（VuePress 可能需要）
+          fetch-depth: 0  # 必要：VuePress 构建可能需要 Git 历史
 
-      - name: 设置 Node.js 环境
+      - name: 设置 Node.js 18.x（推荐兼容版本）
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # 推荐使用 VuePress 支持的 Node.js 版本（18+）
-          cache: 'npm'  # 缓存 npm 依赖，加速构建
+          node-version: '18'  # 避免 20.x 可能的依赖安装兼容问题
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'  # 明确缓存路径，确保安装一致
 
-      - name: 安装依赖
-        run: npm install  # 确保 package.json 中已包含 vuepress
+      - name: 查看当前工作目录（排查路径问题）
+        run: pwd  # 输出应是 /home/runner/work/html/html（项目根目录）
 
-      - name: 构建文档（跨平台兼容）
-        run: node node_modules/vuepress/cli.js build docs  # 通过 node 直接执行 CLI 入口文件
+      - name: 查看 package.json 是否存在（验证文件拉取）
+        run: ls -la  # 确认输出中有 package.json 和 package-lock.json
 
-      # 后续部署步骤（如部署到 GitHub Pages，根据你的需求添加）
+      - name: 强制安装依赖（确保 vuepress 被安装）
+        run: npm ci  # 比 npm install 更严格，强制按 package-lock.json 安装，避免漏装
+        env:
+          NODE_ENV: production  # 可选：加速安装，跳过开发依赖（如果 vuepress 在 dependencies 中）
+
+      - name: 验证 vuepress 是否安装成功（关键排查步骤）
+        run: |
+          ls -la node_modules/vuepress/  # 查看 vuepress 目录是否存在
+          ls -la node_modules/vuepress/cli.js  # 查看 cli.js 是否存在（核心文件）
+
+      - name: 构建文档（VuePress 2.x 专用）
+        run: npx vuepress-vite build docs  # 2.x 版本的官方推荐命令
+        # 如果上面验证发现 cli.js 路径不对，可替换为：
+        # run: node node_modules/@vuepress/cli/lib/cli.js build docs  # VuePress 2.x 部分版本的真实路径
+
+      # 部署步骤（按需保留）
       - name: 部署到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/.vuepress/dist  # VuePress 构建输出目录
+          publish_dir: ./docs/.vuepress/dist
