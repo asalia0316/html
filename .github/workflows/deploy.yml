@@ -1,35 +1,30 @@
-name: Deploy VuePress to GitHub Pages
+name: Deploy to GitHub Pages
+
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 代码
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # 1. 设置 Node.js 环境（符合 VuePress 2.x 要求）
-      - name: 设置 Node.js 20.19.5
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20.19.5'
+          node-version: '20'
+          cache: 'npm'
 
-      # 2. 全局安装 VuePress（无本地依赖，无权限问题）
-      - name: 全局安装 VuePress 2.x
-        run: npm install -g vuepress@2.0.0-rc.26
+      - name: Install dependencies
+        run: npm ci  # 或 npm install
 
-      # 3. 验证安装并构建文档
-      - name: 构建文档
-        run: vuepress-vite build docs  # 全局命令，直接执行
+      - name: Build VuePress site
+        run: npm run build  # 确保 package.json 中有这个 script
 
-      # 4. 部署到 GitHub Pages（与方案一完全一致）
-      - name: 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/.vuepress/dist
-          publish_branch: gh-pages
