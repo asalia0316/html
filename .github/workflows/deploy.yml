@@ -21,8 +21,8 @@ jobs:
       - name: 安装依赖
         run: npm install  # 确保 package.json 中已包含 vuepress
 
-      - name: 构建文档（关键修复）
-        run: npx vuepress build docs  # 使用 npx 执行本地 vuepress，避免全局权限问题
+      - name: 构建文档（跨平台兼容）
+        run: node node_modules/vuepress/cli.js build docs  # 通过 node 直接执行 CLI 入口文件
 
       # 后续部署步骤（如部署到 GitHub Pages，根据你的需求添加）
       - name: 部署到 GitHub Pages
