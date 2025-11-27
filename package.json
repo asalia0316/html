@@ -1,14 +1,9 @@
 {
   "name": "my-html-site",
   "version": "1.0.0",
-  "description": "A simple HTML site with Sass support",
+  "description": "A simple HTML site",
   "scripts": {
-    "build": "sass styles.scss styles.css",
-    "deploy": "npm run build"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "sass": "1.93.3"
+    "build": "echo 'No build needed for static HTML'"
   },
   "private": true
 }
