@@ -1,4 +1,4 @@
-name: Deploy VuePress Docs（全局安装方案）
+name: Deploy VuePress to GitHub Pages
 on:
   push:
     branches: [main]
@@ -12,26 +12,24 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 1. 设置 Node.js 环境（符合 VuePress 2.x 要求）
       - name: 设置 Node.js 20.19.5
         uses: actions/setup-node@v4
         with:
           node-version: '20.19.5'
 
-      # 全局安装 VuePress（用 -g 安装到系统目录，无需本地 node_modules）
-      - name: 全局安装 VuePress
-        run: npm install -g vuepress@2.0.0-rc.26  # 全局安装，避免本地权限问题
+      # 2. 全局安装 VuePress（无本地依赖，无权限问题）
+      - name: 全局安装 VuePress 2.x
+        run: npm install -g vuepress@2.0.0-rc.26
 
-      # 验证全局安装成功
-      - name: 验证 VuePress 版本
-        run: vuepress-vite --version  # 全局命令，直接执行
-
-      # 构建文档（全局命令，无需 npx 或路径）
+      # 3. 验证安装并构建文档
       - name: 构建文档
-        run: vuepress-vite build docs
+        run: vuepress-vite build docs  # 全局命令，直接执行
 
-      # 部署步骤
+      # 4. 部署到 GitHub Pages（与方案一完全一致）
       - name: 部署到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/.vuepress/dist
+          publish_branch: gh-pages
