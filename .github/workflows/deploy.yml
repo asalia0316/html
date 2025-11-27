@@ -1,4 +1,4 @@
-name: Deploy VuePress Docs
+name: Deploy VuePress Docs（全局安装方案）
 on:
   push:
     branches: [main]
@@ -12,35 +12,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 关键修复1：使用 VuePress 2.x 要求的 Node.js 20.9.0+（选 20.x LTS 稳定版）
-      - name: 设置 Node.js 20.x（满足依赖版本要求）
+      - name: 设置 Node.js 20.19.5
         uses: actions/setup-node@v4
         with:
-          node-version: '20.19.5'  # 与报错中一致的 20.x 版本，确保兼容
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
+          node-version: '20.19.5'
 
-      - name: 查看当前工作目录和文件
-        run: |
-          pwd
-          ls -la  # 确认 package.json 和 package-lock.json 都存在
+      # 全局安装 VuePress（用 -g 安装到系统目录，无需本地 node_modules）
+      - name: 全局安装 VuePress
+        run: npm install -g vuepress@2.0.0-rc.26  # 全局安装，避免本地权限问题
 
-      # 关键修复2：用 npm install 同步锁文件（代替 npm ci，自动修复锁文件缺失依赖）
-      - name: 安装依赖并同步锁文件
-        run: npm install  # npm install 会自动更新 package-lock.json，解决 Missing 问题
-        env:
-          NODE_ENV: production
+      # 验证全局安装成功
+      - name: 验证 VuePress 版本
+        run: vuepress-vite --version  # 全局命令，直接执行
 
-      - name: 验证依赖安装成功（可选，用于排查）
-        run: |
-          ls -la node_modules/vuepress/
-          ls -la node_modules/vuepress/cli.js  # 确认 cli.js 存在
-
-      # 构建文档（VuePress 2.x 推荐命令，避免路径问题）
+      # 构建文档（全局命令，无需 npx 或路径）
       - name: 构建文档
-        run: npx vuepress-vite build docs  # 2.x 专用命令，比直接执行 cli.js 更稳定
+        run: vuepress-vite build docs
 
-      # 部署步骤（按需保留）
+      # 部署步骤
       - name: 部署到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
