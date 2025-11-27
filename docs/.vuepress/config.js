@@ -33,6 +33,8 @@ export default defineUserConfig({
       ]
     }
   }),
-
+module.exports = {
+  base: '/html/'
+}
 
 })
