@@ -1,17 +1,14 @@
 {
-  "name": "my-project-docs",
+  "name": "my-html-site",
   "version": "1.0.0",
-  "description": "项目介绍文档",
+  "description": "A simple HTML site with Sass support",
   "scripts": {
-    "dev": "vuepress dev docs",
-    "build": "vuepress build docs"
+    "build": "sass styles.scss styles.css",
+    "deploy": "npm run build"
   },
+  "dependencies": {},
   "devDependencies": {
-    "@vuepress/bundler-vite": "^2.0.0-rc.20",
-    "@vuepress/plugin-back-to-top": "^2.0.0-rc.118",
-    "@vuepress/plugin-medium-zoom": "^2.0.0-rc.118",
-    "@vuepress/theme-default": "^2.0.0-rc.20",
-    "sass-embedded": "^1.93.3",
-    "vuepress": "^2.0.0-rc.26"
-  }
+    "sass": "1.93.3"
+  },
+  "private": true
 }

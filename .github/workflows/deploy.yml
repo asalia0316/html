@@ -1,30 +1,32 @@
+# .github/workflows/deploy.yml
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]  # 或你用的主分支名（如 master）
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20'  # 推荐用 LTS（20 或 22），而非 24（GitHub Actions 环境可能不支持最新）
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci  # 或 npm install
+        run: npm ci
 
-      - name: Build VuePress site
-        run: npm run build  # 确保 package.json 中有这个 script
+      - name: Build
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/.vuepress/dist
+          publish_dir: ./
