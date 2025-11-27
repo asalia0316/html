@@ -1,0 +1,51 @@
+/* 自定义样式 */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+}
+
+/* 代码块样式 */
+pre {
+  border-radius: 4px;
+  background: #f8f9fa;
+}
+
+/* 表格样式 */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+table th, table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+/* 自定义容器 */
+.custom-container {
+  padding: 20px;
+  margin: 20px 0;
+  border-left: 4px solid var(--primary-color);
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .showcase-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
